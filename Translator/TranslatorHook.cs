@@ -15,7 +15,6 @@ namespace DiscoTranslatorFinalCut.Translator
         {
             if (TranslatorManager.TryGetTranslation(Term, out string Translation))
             {
-                //PL.log.LogWarning(Term + " Translation : " + Translation);
                 if (Translation != null && Translation.Length > 0)
                 {
                     try

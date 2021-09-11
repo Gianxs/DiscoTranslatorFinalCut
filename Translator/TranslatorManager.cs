@@ -65,7 +65,7 @@ namespace DiscoTranslatorFinalCut.Translator
             PreloadTranslations();
 
             if (!EnableTranslation) return;
-            if ((LocalizationManager.GetCurrentLanguageName() != PL.LanguageSaved) && PL.LanguageSaved != null && PL.LanguageSaved != "")
+            if ((LocalizationManager.GetCurrentLanguageName() != PL.LanguageSaved) && PL.LanguageSaved != null && PL.LanguageSaved != "" && LanguageFolders.ContainsKey(PL.LanguageSaved))
             {
                 LocalizationManager.SetLanguage(PL.LanguageSaved);
                 currentLanguage = LocalizationManager.GetCurrentLanguageName();
@@ -121,17 +121,23 @@ namespace DiscoTranslatorFinalCut.Translator
                 string[] dirParams = dir.Name.Split('_');
                 if (dirParams.Length != 3)
                 {
-                    PL.log.LogError(PL.PREFIX + "Invalid Folder " + dir);
-                    return;
+                    PL.log.LogError(PL.PREFIX + "Invalid Language Folder " + dir);
+                    continue;
                 }
 
+                int errors = 0;
                 foreach (var param in dirParams)
                 {
                     if (param == null || param == "")
                     {
-                        PL.log.LogError(PL.PREFIX + "Loading language from folder error : Invalid Param, language folder.");
-                        return;
+                        errors++;
                     }
+                }
+
+                if (errors > 0)
+                {
+                    PL.log.LogError(PL.PREFIX + "Loading language from folder error : Invalid language folder format ES: English_American_us.");
+                    continue;
                 }
 
                 string TranslatedName = dirParams[0];
@@ -152,8 +158,6 @@ namespace DiscoTranslatorFinalCut.Translator
                 LanguageFolders.Add(EnglishName, path);
             }
 
-            ImageManager.LoadLanguageTextures();
-
             EnabledLanguages = I2.Loc.LocalizationManager.GetAllLanguages();
 
             PL.log.LogWarning(PL.PREFIX + "Languages list : ");
@@ -173,8 +177,8 @@ namespace DiscoTranslatorFinalCut.Translator
         {
             if(EnableTranslation)
             {
-                //ImageManager.TranslatedTextures(false);
-                //ImageManager.SceneTextures(false);
+                ImageManager.TranslatedTextures(false);
+                ImageManager.SceneTextures(false);
                 AudioManager.SceneClips(false);
             }
 
@@ -226,8 +230,8 @@ namespace DiscoTranslatorFinalCut.Translator
 
                     if(ImageManager.EnableTextureImport)
                     {
-                        //ImageManager.SceneTextures(true);
-                        //ImageManager.TranslatedTextures(true);
+                        ImageManager.SceneTextures(true);
+                        ImageManager.TranslatedTextures(true);
                     }
                     
                     if(AudioManager.EnableAudioImport)

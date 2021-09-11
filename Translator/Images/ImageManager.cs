@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
-using UnityEngine.U2D;
 using UnityEngine.SceneManagement;
 using DiscoTranslatorFinalCut.Translator.UI;
 using DiscoTranslatorFinalCut.Translator.Exporter;
@@ -13,141 +12,14 @@ using PL = DiscoTranslatorFinalCut.PluginLoader;
 
 namespace DiscoTranslatorFinalCut.Translator.Images
 {
-    public class ImageManager : MonoBehaviour
+    public static class ImageManager
     {
-        public static GameObject obj = null;
-        static bool Inizialized = false;
+        static bool inizialized = false;
         public static bool EnableTextureImport = false;
-        public static Scene m_Scene;
-        Scene f_Scene;
-        public static bool SceneChanged = false;
-        int Timer = 0;
-        int numTex = 0;
-        int totTex = 0;
 
         public static Dictionary<string, Texture2D> ImportedGenericTextures = new Dictionary<string, Texture2D>();
         public static Dictionary<string, Texture2D> ImportedLanguageTextures = new Dictionary<string, Texture2D>();
         public static Dictionary<string, Texture2D> ImportedSceneTextures = new Dictionary<string, Texture2D>();
-        internal static GameObject Create(string name)
-        {
-            obj = new GameObject(name);
-            DontDestroyOnLoad(obj);
-
-            new ImageManager(obj.AddComponent(UnhollowerRuntimeLib.Il2CppType.Of<ImageManager>()).Pointer);
-
-            return obj;
-        }
-
-        public ImageManager(IntPtr ptr) : base(ptr) { }
-
-        public void Inizialize()
-        {
-            m_Scene = SceneManager.GetActiveScene();
-            f_Scene = m_Scene;
-            Inizialized = true;
-            PL.log.LogInfo(PL.PREFIX + "Image Swapper Inizialized...");
-        }
-
-        public void Awake() { }
-
-        public void Start() { }
-
-        public void Update()
-        {
-            if (!Inizialized)
-            {
-                Inizialize();
-            }
-
-
-        }
-
-        public static void LoadLanguageTextures()
-        {
-            if (TranslatorManager.LanguageFolders != null && TranslatorManager.LanguageFolders.Count > 0)
-            {
-                foreach(var langpaths in TranslatorManager.LanguageFolders)
-                {
-                    if (langpaths.Key != null && langpaths.Value != null && Directory.Exists(Path.Combine(langpaths.Value, "images"))) {
-                        var language = langpaths.Key;
-                        var langpath = Path.Combine(langpaths.Value, "images");
-
-                        AddSpritesToImageAssets(langpath, language);
-
-                        /*
-                        string[] images = Directory.GetFiles(langpath, "*.png", SearchOption.TopDirectoryOnly);
-                        if(images != null && images.Length > 0)
-                        {
-                            foreach(var image in images)
-                            {
-                                if(image != null)
-                                {
-                                    AddSpritesToImageAssets(image, language);
-                                }
-                            }
-                        }
-                        */
-                    }
-                }
-            }
-        }
-
-        public static void AddSpritesToImageAssets(string langpath, string language)
-        {
-            var langcode = TranslatorManager.GetLanguageCode(language);
-            if (langcode == null) return;
-
-            var LanguageAssets = Resources.FindObjectsOfTypeAll<I2.Loc.LanguageSourceAsset>();
-
-            foreach (var LanguageAsset in LanguageAssets)
-            {
-                if (LanguageAsset.name == "ImagesLockitSpanish")
-                {
-                    var newImagesAsset = Instantiate(LanguageAsset);
-                    newImagesAsset.name = "ImagesLockit" + language;
-                    newImagesAsset.SourceData.RemoveLanguage("Spanish");
-                    newImagesAsset.SourceData.AddLanguage(language);
-                    foreach (var asset in newImagesAsset.SourceData.Assets)
-                    {
-                        if(asset.name.Contains("-es"))
-                        {
-                            asset.name.Replace("-es", langcode);
-                            PL.log.LogWarning("asset : " + asset.name);
-
-                            var filename = asset.name.Replace(langcode, "") + ".png";
-                            if(File.Exists(filename))
-                            {
-                                string image = Directory.GetFiles(langpath, filename, SearchOption.TopDirectoryOnly)[0];
-
-                                var newTexture = UIManager.CreateTextureFromFile(image);
-                                var newSprite = UIManager.CreateSpriteFrmTexture(newTexture);
-                                newTexture.name = asset.name;
-                                newSprite.name = asset.name;
-                            }
-                            else
-                            {
-                                PL.log.LogWarning("File not found : " + filename);
-                            }
-                        }
-                    }
-                    DontDestroyOnLoad(newImagesAsset);
-                }
-            }
-            return;
-        }
-
-        /*
-         * if (image.Contains("ButtonAtlas"))
-                                    {
-                                        PL.log.LogWarning("ButtonAtlas Found for image : " + image);
-                                        
-                                    }
-                                    else
-                                    {
-
-                                    }
-         * 
-         * 
         public static void SceneTextures(bool Load)
         {
             var ActiveScene = SceneManager.GetActiveScene();
@@ -401,6 +273,5 @@ namespace DiscoTranslatorFinalCut.Translator.Images
             }
             return;
         }
-        */
     }
 }

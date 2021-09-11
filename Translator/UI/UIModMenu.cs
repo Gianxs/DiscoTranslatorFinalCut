@@ -60,7 +60,7 @@ namespace DiscoTranslatorFinalCut.Translator.UI
         private GameObject uiButtonAudio;
 
         private GameObject uiSliderVolume;
-        private GameObject uiSliderClipTime;
+        //private GameObject uiSliderClipTime;
 
         private GameObject uiToggleLanguageEnable;
         private GameObject uiToggleAudioRelacer;
@@ -634,18 +634,6 @@ namespace DiscoTranslatorFinalCut.Translator.UI
                 r.position = new Vector2(r.position.x, r.position.y + (uiPanelBodyContentsheight / 2) - 352);
                 //Main Panel Body Contents_layer3
 
-                //uiLabelStatusMessage
-                uiLabelStatusMessage = UIManager.CreateUIText(uiPanelBodyContents_layer3, null, "#FFFFFFFF", Lang.GetTerm("DISCOFC_WELCOME_STATUS_MESSAGE"));
-                r = uiLabelStatusMessage.GetComponent<RectTransform>();
-                r.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 450);
-                r.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 20);
-                t = uiLabelStatusMessage.GetComponent<Text>();
-                t.name = "uiLabelStatusMessage";
-                t.AssignDefaultFont();
-                t.alignment = TextAnchor.MiddleCenter;
-                t.fontSize = 15;
-                //uiLabelStatusMessage
-
                 //Main Panel Body Contents_layer4
                 var uiPanelBodyContents_layer4width = 492;
                 var uiPanelBodyContents_layer4height = 36;
@@ -656,7 +644,17 @@ namespace DiscoTranslatorFinalCut.Translator.UI
                 r.position = new Vector2(r.position.x, r.position.y + (uiPanelBodyContentsheight / 2) - 382);
                 //Main Panel Body Contents_layer4
 
-                
+                //uiLabelStatusMessage
+                uiLabelStatusMessage = UIManager.CreateUIText(uiPanelBodyContents_layer4, null, "#FFFFFFFF", Lang.GetTerm("DISCOFC_WELCOME_STATUS_MESSAGE"));
+                r = uiLabelStatusMessage.GetComponent<RectTransform>();
+                r.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 450);
+                r.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 26);
+                t = uiLabelStatusMessage.GetComponent<Text>();
+                t.name = "uiLabelStatusMessage";
+                t.AssignDefaultFont();
+                t.alignment = TextAnchor.MiddleCenter;
+                t.fontSize = 18;
+                //uiLabelStatusMessage
 
 
 
@@ -788,7 +786,7 @@ namespace DiscoTranslatorFinalCut.Translator.UI
                     return;
                 }
 
-                if (isPointerInsideObject(uiSliderVolume, "slider", Lang.GetTerm("DISCOFC_BUTTON_VOLUME_STATUS_MESSAGE") + " " + ((int)uiSliderVolume.GetComponent<Slider>().value*100).ToString()+"%", uiLabelStatusMessage.GetComponent<Text>()))
+                if (isPointerInsideObject(uiSliderVolume, "slider", Lang.GetTerm("DISCOFC_BUTTON_VOLUME_STATUS_MESSAGE"), uiLabelStatusMessage.GetComponent<Text>()))
                 {
                     if (uiCanvas.active && Input.GetMouseButton(0))
                     {
@@ -864,8 +862,8 @@ namespace DiscoTranslatorFinalCut.Translator.UI
                                 if (ImageManager.EnableTextureImport)
                                 {
                                     uiToggleImageReplacer.GetComponent<Toggle>().SetIsOnWithoutNotify(false);
-                                    //ImageManager.SceneTextures(false);
-                                    //ImageManager.TranslatedTextures(false);
+                                    ImageManager.SceneTextures(false);
+                                    ImageManager.TranslatedTextures(false);
                                     ImageManager.EnableTextureImport = false;
                                     PlayerPrefs.SetInt("EnableTextureImport", 2); //2 is false;
                                     PL.log.LogInfo("Texture Importer Disabled");
@@ -928,8 +926,8 @@ namespace DiscoTranslatorFinalCut.Translator.UI
                         if (ImageManager.EnableTextureImport)
                         {
                             uiToggleImageReplacer.GetComponent<Toggle>().SetIsOnWithoutNotify(false);
-                            //ImageManager.SceneTextures(false);
-                            //ImageManager.TranslatedTextures(false);
+                            ImageManager.SceneTextures(false);
+                            ImageManager.TranslatedTextures(false);
                             ImageManager.EnableTextureImport = false;
                             PlayerPrefs.SetInt("EnableTextureImport", 2); //2 is false;
                             PL.log.LogInfo("Texture Importer Disabled");
@@ -938,9 +936,9 @@ namespace DiscoTranslatorFinalCut.Translator.UI
                         {
                             uiToggleImageReplacer.GetComponent<Toggle>().SetIsOnWithoutNotify(true);
                             ImageManager.EnableTextureImport = true;
-                            //ImageSwapper.obj.GetComponent<ImageSwapper>().enabled = true;
-                            //ImageManager.SceneTextures(true);
-                            //ImageManager.TranslatedTextures(true);
+                            ImageSwapper.obj.GetComponent<ImageSwapper>().enabled = true;
+                            ImageManager.SceneTextures(true);
+                            ImageManager.TranslatedTextures(true);
                             PlayerPrefs.SetInt("EnableTextureImport", 1); //1 is true;
                             PL.log.LogInfo("Texture Importer Enabled");
                         }

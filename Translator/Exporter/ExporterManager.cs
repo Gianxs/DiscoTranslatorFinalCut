@@ -166,7 +166,7 @@ namespace DiscoTranslatorFinalCut.Translator.Exporter
                         int index = source.mSource.GetLanguageIndex(language);
                         if (index < 0) continue;
                         catalog = LanguageSourceToCatalog(source, index);
-                        var catalogPath = Path.Combine(directory, fullName + "_" + language + ".pot");
+                        var catalogPath = Path.Combine(directory, fullName + "_" + language + ".po");
                         using (var file = File.Create(catalogPath))
                         using (var writer = new StreamWriter(file))
                         {
@@ -190,8 +190,8 @@ namespace DiscoTranslatorFinalCut.Translator.Exporter
                 var db = Resources.FindObjectsOfTypeAll<DialogueDatabase>()[0];
 
                 var dialogueCatalog = GetDialogueCatalog(db);
-                var dialogueCatalogPath = Path.Combine(directory, "Dialogues.pot");
-                PL.log.LogInfo(PL.PREFIX + "I2.Loc.LanguageSourceAsset -> Name = Dialogues.pot");
+                var dialogueCatalogPath = Path.Combine(directory, "Dialogues.po");
+                PL.log.LogInfo(PL.PREFIX + "I2.Loc.LanguageSourceAsset -> Name = Dialogues.po");
 
                 using (var file = File.Create(dialogueCatalogPath))
                 using (var writer = new StreamWriter(file))
@@ -224,7 +224,7 @@ namespace DiscoTranslatorFinalCut.Translator.Exporter
                         PL.log.LogInfo("I2.Loc.LanguageSourceAsset -> Name = " + fullName);
                         catalog = LanguageSourceToCatalog(source, engIndex);
 
-                        var catalogPath = Path.Combine(directory, shortName + ".pot");
+                        var catalogPath = Path.Combine(directory, shortName + ".po");
 
                         using (var file = File.Create(catalogPath))
                         using (var writer = new StreamWriter(file))
