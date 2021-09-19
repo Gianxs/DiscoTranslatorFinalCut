@@ -179,7 +179,11 @@
   <ItemGroup>
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Helpers\BundleManager.cs" />
+    <Compile Include="Helpers\GameObjectDetails.cs" />
+    <Compile Include="Helpers\ICallHelper.cs" />
     <Compile Include="Helpers\Il2CppTypeSupport.cs" />
+    <Compile Include="Tools\EventTestComponent.cs" />
+    <Compile Include="Tools\SceneDumper.cs" />
     <Compile Include="Translator\Resources\ResourcesManager.cs" />
     <Compile Include="Translator\TranslatorManager.cs" />
     <Compile Include="Translator\Audio\AudioManager.cs" />
@@ -187,6 +191,7 @@
     <Compile Include="Translator\Exporter\ExporterManager.cs" />
     <Compile Include="Translator\Ext\POTranslatorManager.cs" />
     <Compile Include="Translator\Images\ImageManager.cs" />
+    <Compile Include="Translator\Images\ImageSwapper.cs" />
     <Compile Include="Translator\TranslatorLanguages.cs" />
     <Compile Include="Translator\TranslatorHook.cs" />
     <Compile Include="Main.cs" />

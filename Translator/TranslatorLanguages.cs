@@ -43,7 +43,7 @@ namespace DiscoTranslatorFinalCut.Translator
             DiscoLanguages["English"]["DISCOFC_OPTIONS_TOGGLE_AUDIO_REPLACE"] = "Audio Replacer";
             DiscoLanguages["English"]["DISCOFC_OPTIONS_TOGGLE_IMAGES_REPLACE"] = "Images Replacer";
             DiscoLanguages["English"]["DISCOFC_OPTIONS_TOGGLE_AUDIO_WIDGET"] = "Audio Widget";
-            DiscoLanguages["English"]["DISCOFC_WELCOME_STATUS_MESSAGE"] = "Welcome in Disco Translator Final Cut v1.0";
+            DiscoLanguages["English"]["DISCOFC_WELCOME_STATUS_MESSAGE"] = "Welcome in Disco Translator Final Cut v1.1";
             DiscoLanguages["English"]["DISCOFC_BUTTON_PLAY_STATUS_MESSAGE"] = "Play Active Audio";
             DiscoLanguages["English"]["DISCOFC_BUTTON_STOP_STATUS_MESSAGE"] = "Stop Active Audio";
             DiscoLanguages["English"]["DISCOFC_BUTTON_PAUSE_STATUS_MESSAGE"] = "Stop Active Audio";
@@ -63,7 +63,7 @@ namespace DiscoTranslatorFinalCut.Translator
             DiscoLanguages["Italian"]["DISCOFC_OPTIONS_TOGGLE_AUDIO_REPLACE"] = "Importa Audio";
             DiscoLanguages["Italian"]["DISCOFC_OPTIONS_TOGGLE_IMAGES_REPLACE"] = "Importa Img";
             DiscoLanguages["Italian"]["DISCOFC_OPTIONS_TOGGLE_AUDIO_WIDGET"] = "Widget Audio";
-            DiscoLanguages["Italian"]["DISCOFC_WELCOME_STATUS_MESSAGE"] = "Benvenuto in Disco Translator Final Cut v1.0";
+            DiscoLanguages["Italian"]["DISCOFC_WELCOME_STATUS_MESSAGE"] = "Benvenuto in Disco Translator Final Cut v1.1";
             DiscoLanguages["Italian"]["DISCOFC_BUTTON_PLAY_STATUS_MESSAGE"] = "Play Musica attiva";
             DiscoLanguages["Italian"]["DISCOFC_BUTTON_STOP_STATUS_MESSAGE"] = "Ferma Musica";
             DiscoLanguages["Italian"]["DISCOFC_BUTTON_PAUSE_STATUS_MESSAGE"] = "Metti in pausa";

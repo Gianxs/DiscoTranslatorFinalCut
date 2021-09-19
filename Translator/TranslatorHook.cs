@@ -19,7 +19,7 @@ namespace DiscoTranslatorFinalCut.Translator
                 {
                     try
                     {
-                        Translation = ExtendedFunctions.PregReplace(Translation, "[A-Z]{1}[0-9]+:", "");
+                        Translation = ExtendedFunctions.PregReplace(Translation, "^[A-Z]{1}[0-9]+:", "");
                     }
                     catch (Exception e)
                     {
@@ -29,6 +29,7 @@ namespace DiscoTranslatorFinalCut.Translator
                     return false;
                 }
             }
+
             return true;
         }
     }

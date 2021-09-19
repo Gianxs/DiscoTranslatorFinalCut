@@ -27,7 +27,7 @@ namespace DiscoTranslatorFinalCut
             DUMPED_IMG_ATLAS_PATH = "AtlasTextures",
             DUMPED_IMG_NONATLAS_PATH = "nonAtlasTextures",
             DUMPED_IMG_OTHERS_PATH = "OtherTextures",
-            DUMPED_IMG_BUNDLE_PATH = "BundleTextures",
+            //DUMPED_IMG_BUNDLE_PATH = "BundleTextures",
             DUMPED_LANG_CATALOG_PATH = "Catalog",
             DUMPED_AUDIO_FILES_PATH = "OriginalAudioFiles",
             LANG_TRANSLATIONS_PATH = "Translation",
@@ -41,7 +41,7 @@ namespace DiscoTranslatorFinalCut
             GUID = "com." + AUTHOR + "." + MODNAME,
             PREFIX = "[" + MODNAME + "] ",
             FULLNAME = "Disco Translator Final Cut",
-            VERSION = "1.0.0.0";
+            VERSION = "1.1.0.0";
         public static ManualLogSource log;
         public static string LanguageSaved;
         #endregion
@@ -103,9 +103,8 @@ namespace DiscoTranslatorFinalCut
                 ClassInjector.RegisterTypeInIl2Cpp<BootStrapper>();
                 ClassInjector.RegisterTypeInIl2Cpp<Main>();
                 ClassInjector.RegisterTypeInIl2Cpp<TranslatorManager>();
-                ClassInjector.RegisterTypeInIl2Cpp<TranslatorLanguages>();
-                ClassInjector.RegisterTypeInIl2Cpp<ImageManager>();
-                //ClassInjector.RegisterTypeInIl2Cpp<ImageSwapper>();
+                ClassInjector.RegisterTypeInIl2Cpp<TranslatorLanguages>(); 
+                ClassInjector.RegisterTypeInIl2Cpp<ImageSwapper>();
                 ClassInjector.RegisterTypeInIl2Cpp<AudioSwapper>();
                 //ClassInjector.RegisterTypeInIl2Cpp<AudioLoader>();
 

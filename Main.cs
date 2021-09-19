@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using PL = DiscoTranslatorFinalCut.PluginLoader;
 using Lang = DiscoTranslatorFinalCut.Translator.TranslatorLanguages;
@@ -8,10 +10,13 @@ using DiscoTranslatorFinalCut.Translator.Images;
 using DiscoTranslatorFinalCut.Translator.Audio;
 using DiscoTranslatorFinalCut.Translator.Exporter;
 using DiscoTranslatorFinalCut.Translator.UI;
+using DiscoTranslatorFinalCut.Tools;
+using UnhollowerBaseLib;
 using UnityEngine.SceneManagement;
 
 namespace DiscoTranslatorFinalCut
 {
+    internal delegate void getRootSceneObjects(int handle, IntPtr list);
     public class Main : MonoBehaviour
     {
         #region[Declarations]
@@ -26,6 +31,7 @@ namespace DiscoTranslatorFinalCut
         // Debugging
         private static bool onGuiFired = false;
         private static bool updateFired = false;
+        public static bool optionToggle = false;
 
         #endregion
         #endregion
@@ -48,10 +54,9 @@ namespace DiscoTranslatorFinalCut
         private static void Initialize()
         {
             TranslatorManager.Create("TranslatorComponentGO");
-            ImageManager.Create("TranslatorImageManagerGO");
-            //ImageManager.LoadGenericTextures();
+            ImageManager.LoadGenericTextures();
             AudioSwapper.Create("AudioSwapperGO");
-            //ImageSwapper.Create("ImageSwapperGO");
+            ImageSwapper.Create("ImageSwapperGO");
             UIModMenu.Create("UIMainMenuCanvasGO");
 
             #region[Display HotKeys]
@@ -71,6 +76,7 @@ namespace DiscoTranslatorFinalCut
 
         public void Awake()
         {
+            
             //PL.log.LogMessage("Main Awake() Fired!");
         }
 
@@ -92,11 +98,11 @@ namespace DiscoTranslatorFinalCut
             if (initialized)
             {
                 m_Scene = SceneManager.GetActiveScene();
-                if(m_Scene.name == "Lobby")
+                if (m_Scene.name == "Lobby")
                 {
                     if (Input.GetKeyInt(BepInEx.IL2CPP.UnityEngine.KeyCode.S) && Event.current.type == EventType.KeyDown)
                     {
-                        if(AudioManager.EnableAudioWidget)
+                        if (AudioManager.EnableAudioWidget)
                         {
                             AudioManager.ToggleMusic();
                         }
@@ -104,7 +110,7 @@ namespace DiscoTranslatorFinalCut
                         {
                             PL.log.LogWarning("AudioWidget disabled!");
                         }
-                        
+
                         Event.current.Use();
                     }
 
@@ -147,6 +153,29 @@ namespace DiscoTranslatorFinalCut
                         }
                         Event.current.Use();
                     }
+
+                    /*
+                    if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.N) && Event.current.type == EventType.KeyDown)
+                    {
+                        
+                    }
+
+                    
+                    // Dump All Scenes GameObjects (w/ optionToggle True prints components also)
+                    if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.N) && Event.current.type == EventType.KeyDown)
+                    {
+                        DumpAll(GetAllScenesGameObjects());
+                        Event.current.Use();
+                    }
+
+                    // Dumping Root Scene Objects w/ Values (w/ optionToggle True prints components also)
+                    if (UnityEngine.Input.GetKeyDown(UnityEngine.KeyCode.M) && Event.current.type == EventType.KeyDown)
+                    {
+                        PL.log.LogMessage("Dumping Root Scene Objects w/ values...");
+                        SceneDumper.DumpObjects(GetRootSceneGameObjects().ToArray());
+                        Event.current.Use();
+                    }
+                    */
                 }
             }
         }
@@ -160,6 +189,151 @@ namespace DiscoTranslatorFinalCut
             //windowRect = GUI.Window(0, windowRect, (GUI.WindowFunction)DoMyWindow, "My Window");
         }
 
+        #region[ICalls]
+
+        #region[Get Objects]
+
+        // Resolve the GetRootGameObjects ICall (internal Unity MethodImp functions)
+        internal static getRootSceneObjects getRootSceneObjects_iCall = IL2CPP.ResolveICall<getRootSceneObjects>("UnityEngine.SceneManagement.Scene::GetRootGameObjectsInternal");
+        private static void GetRootGameObjects_Internal(Scene scene, IntPtr list)
+        {
+            getRootSceneObjects_iCall(scene.handle, list);
+        }
+
+        private static Il2CppSystem.Collections.Generic.List<GameObject> GetRootSceneGameObjects()
+        {
+            var scene = SceneManager.GetActiveScene();
+            var list = new Il2CppSystem.Collections.Generic.List<GameObject>(scene.rootCount);
+
+            GetRootGameObjects_Internal(scene, list.Pointer);
+
+            return list;
+        }
+        private static Il2CppSystem.Collections.Generic.List<GameObject> GetAllScenesGameObjects()
+        {
+            Scene[] array = new Scene[SceneManager.sceneCount];
+            for (int i = 0; i < SceneManager.sceneCount; i++)
+            {
+                array[i] = SceneManager.GetSceneAt(i);
+            }
+
+            var allObjectsList = new Il2CppSystem.Collections.Generic.List<GameObject>();
+            foreach (var scene in array)
+            {
+                var list = new Il2CppSystem.Collections.Generic.List<GameObject>(scene.rootCount);
+                GetRootGameObjects_Internal(scene, list.Pointer);
+                foreach (var obj in list) { allObjectsList.Add(obj); }
+            }
+
+            #region[DevNote]
+            /*
+            The reason these differ are that GetAllScenesObjects doen't get DontDestroyOnLoad objects and it maintains heirarchy so it looks like alot less
+            For example: GetAllScenesObjects() doesn't find this Trainer and the games StageLoadManager object.
+            */
+            //log.LogMessage("AllScenesObject's Count: " + allObjectsList.Count.ToString());
+            //log.LogMessage("FindAll<GameObject>() Count: " + GameObject.FindObjectsOfType<GameObject>().Count.ToString());
+            #endregion
+
+            return allObjectsList;
+        }
+
+        #endregion
+
+
+        #endregion
+
+        private static string dumpLog = "";
+        public static void DumpAll(Il2CppSystem.Collections.Generic.List<GameObject> rootObjects)
+        {
+            PL.log.LogMessage("Dumping Objects...");
+
+            foreach (GameObject obj in rootObjects)
+            {
+                dumpLog = "";
+                level = 1;
+                prevlevel = 0;
+
+                // Dump this object
+                PL.log.LogMessage("[GameObject]: " + obj.name);
+                dumpLog += "[GameObject]: " + obj.name + "\r\n";
+
+                #region[Get GameObject Components if optionToggle]
+                if (optionToggle)
+                {
+                    PL.log.LogMessage("  [Components]:");
+                    dumpLog += "  [Components]:\r\n";
+
+                    var comps = obj.GetGameObjectComponents();
+                    foreach (var comp in comps)
+                    {
+                        PL.log.LogMessage("    " + comp.Name);
+                        dumpLog += "    " + comp.Name + "\r\n";
+                    }
+
+                    dumpLog += "\r\n";
+                }
+                #endregion
+
+                // Dump the children
+                DisplayChildren(obj.transform);
+
+                // Write the Dump File
+                if (dumpLog != "")
+                {
+                    if (!Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + "\\OBJECT_DUMPS\\")) { Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + "\\OBJECT_DUMPS\\"); }
+                    File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "\\OBJECT_DUMPS\\" + obj.name + "_DUMP.txt", dumpLog);
+                }
+
+                PL.log.LogMessage("Dump Complete!");
+            }
+        }
+
+        private static int level = 0;
+        private static int prevlevel = 0;
+        private static void DisplayChildren(Transform trans)
+        {
+            prevlevel = level;
+
+            foreach (var child in trans)
+            {
+                var t = child.Cast<Transform>();
+
+                // Adjust the indent
+                string consoleprefix = "";
+                for (int cnt = 0; cnt < level; cnt++) { consoleprefix += "  "; }
+
+                // The Actual Logging
+                PL.log.LogMessage(consoleprefix + "[GameObject]: " + t.gameObject.name);
+                dumpLog += consoleprefix + "[GameObject]: " + t.gameObject.name + "\r\n";
+
+                #region[Get GameObject Components if optionToggle]
+                if (optionToggle)
+                {
+                    PL.log.LogMessage(consoleprefix + "  [Components]:");
+                    dumpLog += consoleprefix + "  [Components]:\r\n";
+
+                    var comps = t.gameObject.GetGameObjectComponents();
+                    foreach (var comp in comps)
+                    {
+                        PL.log.LogMessage(consoleprefix + "    " + comp.Name);
+                        dumpLog += consoleprefix + "    " + comp.Name + "\r\n";
+                    }
+
+                    dumpLog += "\r\n";
+                }
+                #endregion
+
+                // Out Inifinate Iterator
+                if (t.childCount > 0)
+                {
+                    level += 1;
+                    DisplayChildren(t);
+                }
+                else { level = prevlevel; }
+
+            }
+        }
+
         /*
         void DoMyWindow(int windowID)
         {
@@ -171,5 +345,55 @@ namespace DiscoTranslatorFinalCut
             //PL.log.LogInfo("DoMyWindow");
         }
         */
+    }
+
+    public static class GameObjectExtensions
+    {
+        public static bool HasComponent<T>(this GameObject flag) where T : Component
+        {
+            if (flag == null)
+                return false;
+            return flag.GetComponent<T>() != null;
+        }
+
+        public static List<GameObject> GetParentsChildren(this GameObject parent)
+        {
+            if (parent == null)
+                return null;
+            List<GameObject> tmp = new List<GameObject>();
+
+            for (int idx = 0; idx < parent.transform.childCount; idx++)
+            {
+                tmp.Add(parent.transform.GetChild(idx).gameObject);
+            }
+
+            return tmp;
+        }
+
+        public static List<Il2CppSystem.Type> GetGameObjectComponents(this GameObject gameObject)
+        {
+            if (gameObject == null)
+                return null;
+            List<Il2CppSystem.Type> tmp = new List<Il2CppSystem.Type>();
+
+            var comps = gameObject.GetComponents<Component>();
+            foreach (var comp in comps)
+            {
+                tmp.Add(comp.GetIl2CppType());
+            }
+
+            return tmp;
+        }
+
+        public static void DumpGameObject(this GameObject obj)
+        {
+            if (obj == null)
+                return;
+
+            Il2CppSystem.Collections.Generic.List<GameObject> tmpList = new Il2CppSystem.Collections.Generic.List<GameObject>();
+            tmpList.Add(obj);
+            Main.DumpAll(tmpList);
+        }
+
     }
 }

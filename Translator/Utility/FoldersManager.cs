@@ -12,7 +12,7 @@ namespace DiscoTranslatorFinalCut.Translator.Utility
             if (!Directory.Exists(GetPath("DIAP"))) Directory.CreateDirectory(GetPath("DIAP"));
             if (!Directory.Exists(GetPath("DINP"))) Directory.CreateDirectory(GetPath("DINP"));
             if (!Directory.Exists(GetPath("DIOP"))) Directory.CreateDirectory(GetPath("DIOP"));
-            if (!Directory.Exists(GetPath("DIBP"))) Directory.CreateDirectory(GetPath("DIBP"));
+            //if (!Directory.Exists(GetPath("DIBP"))) Directory.CreateDirectory(GetPath("DIBP"));
             if (!Directory.Exists(GetPath("DLCP"))) Directory.CreateDirectory(GetPath("DLCP"));
             if (!Directory.Exists(GetPath("LTP"))) Directory.CreateDirectory(GetPath("LTP"));
             if (!Directory.Exists(GetPath("IIBP"))) Directory.CreateDirectory(GetPath("IIBP"));
@@ -41,9 +41,11 @@ namespace DiscoTranslatorFinalCut.Translator.Utility
                 case "DIOP":
                     ret = Path.Combine(Paths.PluginPath, Loader.BASE_PLUGIN_PATH, Loader.DUMPED_IMG_PATH, Loader.DUMPED_IMG_OTHERS_PATH);
                 break;
+                    /*
                 case "DIBP":
                     ret = Path.Combine(Paths.PluginPath, Loader.BASE_PLUGIN_PATH, Loader.DUMPED_IMG_PATH, Loader.DUMPED_IMG_BUNDLE_PATH);
                 break;
+                    */
                 case "DLCP":
                     ret = Path.Combine(Paths.PluginPath, Loader.BASE_PLUGIN_PATH, Loader.DUMPED_LANG_CATALOG_PATH);
                 break;

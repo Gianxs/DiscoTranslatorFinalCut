@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.IO;
 using System.Collections.Generic;
 using System;
@@ -6,7 +7,7 @@ using DiscoTranslatorFinalCut.Translator.Ext;
 using DiscoTranslatorFinalCut.Translator.Images;
 using DiscoTranslatorFinalCut.Translator.Audio;
 using DiscoTranslatorFinalCut.Translator.Exporter;
-using DiscoTranslatorFinalCut.Translator.UI;
+//using UnityEngine.SceneManagement;
 using DiscoTranslatorFinalCut.Translator.Utility;
 using PL = DiscoTranslatorFinalCut.PluginLoader;
 using Lang = DiscoTranslatorFinalCut.Translator.TranslatorLanguages;
@@ -23,13 +24,15 @@ namespace DiscoTranslatorFinalCut.Translator
         public static GameObject obj = null;
         public static TranslatorManager instance;
         private static bool initialized = false;
-        //private bool Executed = false;
+        private int Delayer = 0;
         public static string currentLanguage = "";
         public static string currentLanguageCode = "";
         public static string currentLanguagePath;
         public static int currentLanguageIndex = 0;
         public static Dictionary<string, string> LanguageFolders = new Dictionary<string, string>();
         public static bool isCustomLanguage = false;
+        public static bool SkillPanelLoaded = false;
+        public static bool UIElementsFixed = false;
 
         public static bool EnableTranslation { get; set; } = true;
 
@@ -58,6 +61,8 @@ namespace DiscoTranslatorFinalCut.Translator
 
         public void Awake()
         {
+            //PL.log.LogWarning(FindObjectOfType<DialogueBundleLoader>().GetLocalDatabaseXMLPath()); => Disco Elysium.xml
+            //PL.log.LogWarning(DialogueBundleLoader.ASSET_ADDRESS + " | " + DialogueBundleLoader.ASSET_LOCAL_ADDRESS); Disco Elysium.asset & Disco Elysium Local.asset => global-metadata.dat
             Lang.Create("MODTranslatorLanguagesGO");
 
             PL.LanguageSaved = PL.GetStrPrefs("LanguageSaved");
@@ -72,6 +77,7 @@ namespace DiscoTranslatorFinalCut.Translator
                 currentLanguageCode = LocalizationManager.GetCurrentLanguageCode();
                 LoadTranslation(currentLanguage);
             }
+
         }
 
         public void Update()
@@ -87,8 +93,69 @@ namespace DiscoTranslatorFinalCut.Translator
                 currentLanguageIndex = GetLanguageIndex(currentLanguage);
 
                 LoadTranslation(currentLanguage);
-
                 PL.log.LogInfo(PL.PREFIX + "currentLanguage : " + currentLanguage + " | Code : " + currentLanguageCode);
+
+                if(isCustomLanguage)
+                {
+                    var labels = Resources.FindObjectsOfTypeAll<TMPro.TMP_Text>();
+                    foreach (var label in labels)
+                    {
+                        if (label.text == GetCustomTranslation("HUD_DAY") && label.fontSize != 14f)
+                        {
+                            label.fontSize = 14f;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (isCustomLanguage)
+            {
+                if (Delayer >= 30)
+                {
+                    Delayer = 0;
+                    var skillspanels = Resources.FindObjectsOfTypeAll<SkillPortraitPanel>();
+                    if (skillspanels[1].isActiveAndEnabled)
+                    {
+                        if(!SkillPanelLoaded)
+                        {
+                            foreach (var skillpanel in skillspanels)
+                            {
+                                if (skillpanel.name != "TemplateSkillPortrait")
+                                {
+                                    var label = skillpanel.GetComponentsInChildren<Charsheet.SkillPortrayLabel>()[0];
+                                    if (skillpanel.isInitialized && label.skillName.text.ToUpper() != GetCustomTranslation("Skills/SKILL_NAME_" + skillpanel.name.ToUpper()))
+                                    {
+                                        label.skillName.enableAutoSizing = true;
+                                        //label.skillName.autoSizeTextContainer = true;
+                                        label.skillName.text = GetCustomTranslation("Skills/SKILL_NAME_" + skillpanel.name.ToUpper()).ToUpper();
+                                        label.skillName.CalculateLayoutInputHorizontal();
+                                        label.skillName.CalculateLayoutInputVertical();
+                                    }
+                                }
+                            }
+                            SkillPanelLoaded = true;
+                        }
+                    }
+                    else
+                    {
+                        if (SkillPanelLoaded)
+                        {
+                            SkillPanelLoaded = false;
+                        }
+                    }
+
+                    var uiDay = GameObject.Find("Day");
+                    if(uiDay != null)
+                    {
+                        var labelUIDay = uiDay.GetComponent<TMPro.TMP_Text>();
+                        if (labelUIDay != null && labelUIDay.isActiveAndEnabled && labelUIDay.fontSize != 14f)
+                        {
+                            labelUIDay.fontSize = 14f;
+                        }
+                    }
+                }
+                Delayer++;
             }
         }
 
@@ -248,6 +315,26 @@ namespace DiscoTranslatorFinalCut.Translator
                     return;
                 }
             }
+        }
+
+        public static string GetCustomTranslation(string Term)
+        {
+            if (TranslatorManager.TryGetTranslation(Term, out string Translation))
+            {
+                if (Translation != null && Translation.Length > 0)
+                {
+                    try
+                    {
+                        Translation = ExtendedFunctions.PregReplace(Translation, "^[A-Z]{1}[0-9]+:", "");
+                    }
+                    catch (Exception e)
+                    {
+                        PL.log.LogWarning(PL.PREFIX + "Translation PregReplace failed on TranslatorHook.cs => " + e.Message);
+                    }
+                    return Translation;
+                }
+            }
+            return I2.Loc.LocalizationManager.GetTranslation(Term);
         }
 
         public static int GetLanguageIndex(string Language)

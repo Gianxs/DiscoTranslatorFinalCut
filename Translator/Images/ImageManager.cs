@@ -20,10 +20,11 @@ namespace DiscoTranslatorFinalCut.Translator.Images
         public static Dictionary<string, Texture2D> ImportedGenericTextures = new Dictionary<string, Texture2D>();
         public static Dictionary<string, Texture2D> ImportedLanguageTextures = new Dictionary<string, Texture2D>();
         public static Dictionary<string, Texture2D> ImportedSceneTextures = new Dictionary<string, Texture2D>();
+        public static Dictionary<string, Texture2D> ImportedSkillsTextures = new Dictionary<string, Texture2D>();
         public static void SceneTextures(bool Load)
         {
             var ActiveScene = SceneManager.GetActiveScene();
-            if (ActiveScene.name == "Initialize" || ActiveScene.name == "Lobby") return;
+            if (ActiveScene.name == "Initialize") return;
             
             var db = ImportedSceneTextures;
             var Textures = Resources.FindObjectsOfTypeAll<Texture2D>();
@@ -33,7 +34,7 @@ namespace DiscoTranslatorFinalCut.Translator.Images
                 if (tex == null) continue;
                 if (tex.name == null) continue;
 
-                if (ImportedGenericTextures.ContainsKey(tex.name) || ImportedLanguageTextures.ContainsKey(tex.name)) continue;
+                if (ImportedLanguageTextures.ContainsKey(tex.name)) continue;
 
                 string filename;
                 if (TranslatorManager.currentLanguagePath != null && TranslatorManager.isCustomLanguage) {
@@ -43,6 +44,10 @@ namespace DiscoTranslatorFinalCut.Translator.Images
                     {
                         if (!db.ContainsKey(tex.name) && Load)
                         {
+                            if (tex.name.Contains("hat_mullen"))
+                            {
+                                PL.log.LogWarning(tex.name + " loading...");
+                            }
                             LoadTextureToList(tex, db, path1);
                         }
 
@@ -186,7 +191,7 @@ namespace DiscoTranslatorFinalCut.Translator.Images
            
             var ActiveScene  = SceneManager.GetActiveScene();
             
-            if (ActiveScene.name == "Initialize" || ActiveScene.name == "Lobby")
+            if (ActiveScene.name == "Initialize")
             {
                 if (!inizialized) PL.log.LogInfo(PL.PREFIX + "Importing Generic Images -> Start...");
 
@@ -214,6 +219,11 @@ namespace DiscoTranslatorFinalCut.Translator.Images
                         if (tex == null) continue;
                         if (tex.name == null) continue;
 
+                        if (tex.name.Contains("portrait_"))
+                        {
+                            continue;
+                        }
+
                         tex.name = ExtendedFunctions.checkAtlas(path1, tex.name);
 
                         if (!db.ContainsKey(tex.name))
@@ -226,7 +236,6 @@ namespace DiscoTranslatorFinalCut.Translator.Images
                                 //Replace texture...
                                 if (tex.name == Path.GetFileNameWithoutExtension(filename))
                                 {
-                                    db.Add(tex.name, tex);
                                     try
                                     {
                                         tex.LoadImage(File.ReadAllBytes(filename), false);
@@ -237,6 +246,7 @@ namespace DiscoTranslatorFinalCut.Translator.Images
                                         //PL.log.LogWarning(e.Message);
                                         //Ignore this Readable Error/Warning, it works! O_o, who cares!
                                     }
+                                    db.Add(tex.name, tex);
                                     PL.log.LogInfo(PL.PREFIX + "Texture replaced... " + tex.name);
                                 }
                             }

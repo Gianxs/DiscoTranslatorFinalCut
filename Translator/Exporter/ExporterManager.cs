@@ -109,6 +109,7 @@ namespace DiscoTranslatorFinalCut.Translator.Exporter
                 }
             }
 
+            /*
             string MyPath = Path.Combine(Application.streamingAssetsPath, "aa", "StandaloneWindows64");
             string[] MyAssets = Directory.GetFiles(MyPath);
 
@@ -137,6 +138,7 @@ namespace DiscoTranslatorFinalCut.Translator.Exporter
                     }
                 }
             }
+            */
 
             PL.log.LogInfo(PL.PREFIX + "ExportImages Done... Total Exported texture : " + Exported.ToString());
             TranslatorHook.EnableImageHook = true;
@@ -166,7 +168,7 @@ namespace DiscoTranslatorFinalCut.Translator.Exporter
                         int index = source.mSource.GetLanguageIndex(language);
                         if (index < 0) continue;
                         catalog = LanguageSourceToCatalog(source, index);
-                        var catalogPath = Path.Combine(directory, fullName + "_" + language + ".po");
+                        var catalogPath = Path.Combine(directory, fullName + ".po");
                         using (var file = File.Create(catalogPath))
                         using (var writer = new StreamWriter(file))
                         {
@@ -180,8 +182,6 @@ namespace DiscoTranslatorFinalCut.Translator.Exporter
                 PL.log.LogError(PL.PREFIX + "Export LanguageSourceAsset Failed : " + e.Message);
             }
 
-            
-
             try
             {
                 // Manually generate dialogue catalog for additional infos
@@ -190,8 +190,8 @@ namespace DiscoTranslatorFinalCut.Translator.Exporter
                 var db = Resources.FindObjectsOfTypeAll<DialogueDatabase>()[0];
 
                 var dialogueCatalog = GetDialogueCatalog(db);
-                var dialogueCatalogPath = Path.Combine(directory, "Dialogues.po");
-                PL.log.LogInfo(PL.PREFIX + "I2.Loc.LanguageSourceAsset -> Name = Dialogues.po");
+                var dialogueCatalogPath = Path.Combine(directory, "DialoguesLockitEnglish.po");
+                PL.log.LogInfo(PL.PREFIX + "I2.Loc.LanguageSourceAsset -> Name = DialoguesLockitEnglish.po");
 
                 using (var file = File.Create(dialogueCatalogPath))
                 using (var writer = new StreamWriter(file))
@@ -286,8 +286,12 @@ namespace DiscoTranslatorFinalCut.Translator.Exporter
                     {
                         if (string.IsNullOrWhiteSpace(field.value))
                             continue;
+                        //PL.log.LogWarning(field.title + " | " + field.value);
+                        //if (field.title.Contains("ELECTROCHEMISTRY"))
                         if (!DialogueTranslatableFields.Contains(field.title))
+                        {
                             continue;
+                        }
                         //if (!ConversationTranslatableFields.Contains(field.title))
                         //continue;
 

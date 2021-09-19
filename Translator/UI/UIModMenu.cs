@@ -97,10 +97,15 @@ namespace DiscoTranslatorFinalCut.Translator.UI
 
             m_Scene = SceneManager.GetActiveScene();
 
-            if (uiToggleLanguageEnable != null) uiToggleLanguageEnable.GetComponent<Toggle>().enabled = TranslatorManager.EnableTranslation;
-            if (uiToggleAudioRelacer != null) uiToggleAudioRelacer.GetComponent<Toggle>().enabled = AudioManager.EnableAudioImport;
-            if (uiToggleImageReplacer != null) uiToggleImageReplacer.GetComponent<Toggle>().enabled = ImageManager.EnableTextureImport;
-            if (uiToggleAudioWidget != null) uiToggleAudioWidget.GetComponent<Toggle>().enabled = AudioManager.EnableAudioWidget;
+            if (uiToggleLanguageEnable != null) uiToggleLanguageEnable.GetComponent<Toggle>().enabled = true;
+            if (uiToggleAudioRelacer != null) uiToggleAudioRelacer.GetComponent<Toggle>().enabled = true;
+            if (uiToggleImageReplacer != null) uiToggleImageReplacer.GetComponent<Toggle>().enabled = true;
+            if (uiToggleAudioWidget != null) uiToggleAudioWidget.GetComponent<Toggle>().enabled = true;
+
+            if (uiToggleLanguageEnable != null) uiToggleLanguageEnable.GetComponent<Toggle>().SetIsOnWithoutNotify(TranslatorManager.EnableTranslation);
+            if (uiToggleAudioRelacer != null) uiToggleAudioRelacer.GetComponent<Toggle>().SetIsOnWithoutNotify(AudioManager.EnableAudioImport);
+            if (uiToggleImageReplacer != null) uiToggleImageReplacer.GetComponent<Toggle>().SetIsOnWithoutNotify(ImageManager.EnableTextureImport);
+            if (uiToggleAudioWidget != null) uiToggleAudioWidget.GetComponent<Toggle>().SetIsOnWithoutNotify(AudioManager.EnableAudioWidget);
 
             Initialized = true;
         }
@@ -699,6 +704,7 @@ namespace DiscoTranslatorFinalCut.Translator.UI
             }
 
             if (!uiCanvas.active) return;
+            m_Scene = SceneManager.GetActiveScene();
 
             if (TranslatorManager.currentLanguage != currentLanguage)
             {
@@ -744,7 +750,6 @@ namespace DiscoTranslatorFinalCut.Translator.UI
                 Delayer++;
                 if (Delayer > 60)
                 {
-                    m_Scene = SceneManager.GetActiveScene();
                     AudioManager.GetActiveMusic();
                     UpdateTimer(uiLabelTimer);
                     Delayer = 0;
